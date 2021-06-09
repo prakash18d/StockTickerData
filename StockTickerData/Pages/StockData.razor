@@ -1,0 +1,69 @@
+﻿
+@page "/StockData"
+
+@inject IHttpClientFactory _clientFactory
+
+<h3>StockDATa</h3>
+@if (string.IsNullOrWhiteSpace(errorString) == false)
+{
+    <div class="h2">@errorString</div>
+}
+else if (data is null)
+{
+    <div class="h4">Loading....</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>lastTrade</th>
+                <th>exchange</th>
+                <th>marketCap</th>
+                <th>previousClose</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var w in data.data)
+            {
+                <tr>
+                    <td>
+                        @w.lastTrade
+                    </td>
+                    <td>
+                        @w.previousClose
+                    </td>
+                    <td>
+                        @w.marketCap
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    StockDataModels data;
+    string errorString;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://clientapi.gcs-web.com/irdata/v1/036f008d-7ce2-4e16-84fd-5c622897838b/quotes");
+        var client = _clientFactory.CreateClient();
+        HttpResponseMessage response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            data = await response.Content.ReadFromJsonAsync<StockDataModels>();
+            errorString = null;
+        }
+        else
+        {
+            errorString = $"Error is there:{response.ReasonPhrase}";
+        }
+
+    }
+
+}
