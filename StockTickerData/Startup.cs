@@ -34,7 +34,7 @@ namespace StockTickerData
             
             services.AddHttpClient("stock", c => { c.BaseAddress = new Uri(Configuration["ClientURI"]); });
             services.AddRouting();
-            services.AddApplicationInsightsTelemetry();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,10 +58,7 @@ namespace StockTickerData
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+           
         }
     }
 }
